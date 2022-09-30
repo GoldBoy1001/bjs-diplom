@@ -25,8 +25,8 @@ function exchangeRates() {
       }
    });
 }
-
-setInterval(exchangeRates(), 60000);
+exchangeRates();
+setInterval(exchangeRates, 60000);
 
 
 
@@ -34,7 +34,6 @@ const moneyManager = new MoneyManager();
 
 moneyManager.addMoneyCallback = money => ApiConnector.addMoney(money, response => {
    if (response.success) {
-      moneyManager.addMoneyAction();
       ProfileWidget.showProfile(response.data);
       return moneyManager.setMessage(true, 'Успешное пополнение счета' + money.currency + money.amount);
    }
@@ -45,7 +44,6 @@ moneyManager.addMoneyCallback = money => ApiConnector.addMoney(money, response =
 
 moneyManager.conversionMoneyCallback = exchange => ApiConnector.convertMoney(exchange, response => {
    if (response.success) {
-      moneyManager.conversionMoneyAction();
       ProfileWidget.showProfile(response.data);
       return moneyManager.setMessage(true, 'Успешная конвертация суммы ' + exchange.fromCurrency + exchange.fromAmount);
    }
@@ -54,7 +52,6 @@ moneyManager.conversionMoneyCallback = exchange => ApiConnector.convertMoney(exc
 
 moneyManager.sendMoneyCallback = debit => ApiConnector.transferMoney(debit, response => {
    if (response.success) {
-      moneyManager.sendMoneyAction();
       ProfileWidget.showProfile(response.data);
       return moneyManager.setMessage(true, 'Успешный перевод ' + debit.currency + debit.amount + ' получателю ' + debit.to);
    }
@@ -76,7 +73,7 @@ favorite.addUserCallback = addUser => ApiConnector.addUserToFavorites(addUser, r
       favorite.clearTable();
       favorite.fillTable(response.data);
       moneyManager.updateUsersList(response.data);
-      return moneyManager.setMessage(true, 'Добавлен новый пользователь #' + addUser.id + ': ' + addUser.name);
+      return favorite.setMessage(true, 'Добавлен новый пользователь #' + addUser.id + ': ' + addUser.name);
    }
    return moneyManager.setMessage(false, 'Ошибка: ' + response.error);
 });
@@ -86,7 +83,7 @@ favorite.removeUserCallback = deletedUser => ApiConnector.removeUserFromFavorite
       favorite.clearTable();
       favorite.fillTable(response.data);
       moneyManager.updateUsersList(response.data);
-      return moneyManager.setMessage(true, 'Пользователь ' + deletedUser + ' удален');
+      return favorite.setMessage(true, 'Пользователь ' + deletedUser + ' удален');
    }
-   return moneyManager.setMessage(false, 'Ошибка: ' + response.error);
+   return favorite.setMessage(false, 'Ошибка: ' + response.error);
 });
